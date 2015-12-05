@@ -6,8 +6,6 @@ A minimal location library for Android
 **Supported Android versions**: Android 7+
 
 # Usage
-
-`POST` example
 ```java
 new Locate(this).request(new Locate.Handler() {
     @Override
