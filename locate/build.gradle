@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+
+// http://inthecheesefactory.com/blog/how-to-upload-library-to-jcenter-maven-central-as-dependency/en
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'locate'
+
+    publishedGroupId = 'com.apptakk.locate'
+    libraryName = 'locate'
+    artifact = 'locate'
+
+    libraryDescription = 'Simple location library for Android'
+
+    siteUrl = 'https://github.com/erf/locate'
+    gitUrl = 'https://github.com/erf/locate.git'
+
+    libraryVersion = '0.0.1'
+
+    developerId = 'erf'
+    developerName = 'Erlend Fagerheim'
+    developerEmail = 'erlendf80@gmail.com'
+
+    licenseName = 'ISC'
+    licenseUrl = 'http://opensource.org/licenses/isc-license.txt'
+    allLicenses = ["ISC"]
+}
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 23
+        versionCode 1
+        versionName "0.0.1"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+
