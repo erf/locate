@@ -7,6 +7,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
@@ -15,23 +16,31 @@ import android.support.v4.app.ActivityCompat;
  */
 public class Locate {
 
-    private LocateListener locateListener;
+    private final LocationManager locationManager; // TODO make static ?
+    private final LocateListener locateListener;
+    private final String provider = "fused";
+    private final Context context;
     private Handler locationHandler;
-    private final LocationManager locationManager;
-    private final String provider;
-    private Context context;
 
     public Locate(Context context) {
         this.context = context;
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        provider = locationManager.getBestProvider(criteria, false);
-        locateListener = new LocateListener();
+        this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        this.locateListener = new LocateListener();
     }
 
     public void request(Handler locationHandler) {
         this.locationHandler = locationHandler;
+        checkPermission();
+        locationManager.requestLocationUpdates(provider, 0, 0, locateListener);
+    }
 
+    public Location lastKnown() {
+        checkPermission();
+        return locationManager.getLastKnownLocation(this.provider);
+    }
+
+    // TODO should Locate handle this ..?
+    public void checkPermission(){
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -43,8 +52,6 @@ public class Locate {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-
-        locationManager.requestLocationUpdates(provider, 0, 0, locateListener);
     }
 
     public interface Handler {
@@ -55,24 +62,21 @@ public class Locate {
 
         @Override
         public void onLocationChanged(Location location) {
+            checkPermission();
             locationManager.removeUpdates(this);
             locationHandler.found(location);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
         }
     }
-
 }

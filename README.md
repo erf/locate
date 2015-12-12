@@ -17,6 +17,6 @@ new Locate(this).request(new Locate.Handler() {
 
 # Install
 ```groovy
-compile 'com.apptakk.locate:locate:0.0.2'
+compile 'com.apptakk.locate:locate:0.0.3'
 ```
 
