@@ -13,14 +13,10 @@ import android.support.v4.app.ActivityCompat;
 /**
  * Created by erlend on 05/12/15.
  */
-public class Locate implements LocationListener {
+public class Locate {
 
+    private LocateListener locateListener;
     private Handler locationHandler;
-
-    public interface Handler {
-        void found(Location location);
-    }
-
     private final LocationManager locationManager;
     private final String provider;
     private Context context;
@@ -30,6 +26,7 @@ public class Locate implements LocationListener {
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         provider = locationManager.getBestProvider(criteria, false);
+        locateListener = new LocateListener();
     }
 
     public void request(Handler locationHandler) {
@@ -47,42 +44,35 @@ public class Locate implements LocationListener {
             return;
         }
 
-        locationManager.requestLocationUpdates(provider, 0, 0, this);
+        locationManager.requestLocationUpdates(provider, 0, 0, locateListener);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
+    public interface Handler {
+        void found(Location location);
+    }
 
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+    private class LocateListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            locationManager.removeUpdates(this);
+            locationHandler.found(location);
         }
 
-        locationManager.removeUpdates(this);
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
 
-        this.locationHandler.found(location);
+        }
 
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
     }
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
 }
