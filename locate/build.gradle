@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/erf/locate'
     gitUrl = 'https://github.com/erf/locate.git'
 
-    libraryVersion = '0.0.3'
+    libraryVersion = '0.0.4'
 
     developerId = 'erf'
     developerName = 'Erlend Fagerheim'
@@ -32,8 +32,8 @@ android {
     defaultConfig {
         minSdkVersion 7
         targetSdkVersion 23
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 4
+        versionName "0.0.4"
     }
     buildTypes {
         release {
