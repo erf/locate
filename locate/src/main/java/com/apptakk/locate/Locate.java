@@ -13,43 +13,23 @@ import android.support.v4.app.ActivityCompat;
  * Created by erlend on 05/12/15.
  */
 public class Locate {
-
-    private final LocationManager locationManager; // TODO make static ?
+    private final LocationManager locationManager;
     private final LocateListener locateListener;
     private final String provider = "fused";
-    private final Context context;
     private Handler locationHandler;
 
     public Locate(Context context) {
-        this.context = context;
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         this.locateListener = new LocateListener();
     }
 
     public void request(Handler locationHandler) {
         this.locationHandler = locationHandler;
-        checkPermission();
         locationManager.requestLocationUpdates(provider, 0, 0, locateListener);
     }
 
     public Location lastKnown() {
-        checkPermission();
         return locationManager.getLastKnownLocation(this.provider);
-    }
-
-    // TODO should Locate handle this ..?
-    public void checkPermission(){
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
     }
 
     public boolean locationServicesEnabled(){
@@ -65,7 +45,7 @@ public class Locate {
             network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         } catch(Exception ex) {}
 
-        return gps_enabled && network_enabled;
+        return gps_enabled || network_enabled;
     }
 
     public interface Handler {
@@ -76,7 +56,6 @@ public class Locate {
 
         @Override
         public void onLocationChanged(Location location) {
-            checkPermission();
             locationManager.removeUpdates(this);
             locationHandler.found(location);
         }
