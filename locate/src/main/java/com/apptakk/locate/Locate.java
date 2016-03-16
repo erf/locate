@@ -1,13 +1,11 @@
 package com.apptakk.locate;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 
 /**
  * Created by erlend on 05/12/15.
@@ -15,37 +13,45 @@ import android.support.v4.app.ActivityCompat;
 public class Locate {
     private final LocationManager locationManager;
     private final LocateListener locateListener;
-    private final String provider = "fused";
     private Handler locationHandler;
+    private String provider;
 
     public Locate(Context context) {
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         this.locateListener = new LocateListener();
+
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        provider = locationManager.getBestProvider(criteria, true);
     }
 
     public void request(Handler locationHandler) {
         this.locationHandler = locationHandler;
+
+        if(provider == null)
+            return;
+
         locationManager.requestLocationUpdates(provider, 0, 0, locateListener);
     }
 
     public Location lastKnown() {
+        if (this.provider == null)
+            return null;
+
         return locationManager.getLastKnownLocation(this.provider);
     }
 
     public boolean locationServicesEnabled(){
-
-        boolean gps_enabled = false;
-        boolean network_enabled = false;
-
-        try {
-            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception ex) {}
+        if(provider == null)
+            return false;
 
         try {
-            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
+            if (locationManager.isProviderEnabled(provider))
+                return true;
+        } catch (Exception e){
+        }
 
-        return gps_enabled || network_enabled;
+        return false;
     }
 
     public interface Handler {
