@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.apptakk.locate.GoogleLocate;
 import com.apptakk.locate.Locate;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,29 +32,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void requestLocations(){
-        Locate locate = new Locate(this);
-        Location lastLocation = locate.lastKnown();
+        GoogleLocate locate = new GoogleLocate(this);
 
         final TextView textView = (TextView)findViewById(R.id.hello);
         final String[] locationString = {""};
+        /*
         if(lastLocation != null){
             locationString[0] = "last known\n" + lastLocation.toString() + "\n";
             textView.setText(locationString[0]);
         }
+        */
 
-
+        /*
         if(!locate.locationServicesEnabled()){
             showlocationServicesNotEnabledAlert();
             return;
         }
+        */
 
-        locate.request(new Locate.Handler() {
+        locate.request(new GoogleLocate.Handler() {
             @Override
             public void found(Location location) {
                 locationString[0] += "\ncurrent\n" + location.toString() + "\n";
                 textView.setText(locationString[0]);
             }
         });
+
     }
 
     private void showlocationServicesNotEnabledAlert() {
